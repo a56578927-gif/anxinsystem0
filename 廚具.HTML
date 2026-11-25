@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安盛系統櫥櫃與櫥俱 | 陽光明亮與極致收納</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 圖示庫 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandblue: '#003876',
+                        sunshine: {
+                            50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 300: '#fcd34d',
+                            400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 700: '#b45309',
+                            800: '#92400e', 900: '#78350f',
+                        },
+                        warmwood: {
+                            50: '#fdfbf7', 100: '#f7f2ea', 200: '#ebe0d0', 800: '#4a3b32', 900: '#2d221c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(255, 253, 247, 0.95) 0%, rgba(254, 243, 199, 0.85) 100%), 
+                        url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.35s ease-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-warmwood-50 text-stone-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Toast 訊息提示元件 -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-stone-900 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-sunshine-400 text-xl"></i>
+        <span id="toast-msg" class="font-medium text-sm">訊息說明</span>
+    </div>
+
+    <!-- 全站頂部導覽列 -->
+    <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-sunshine-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <!-- 品牌全新視覺 LOGO (安字 + 房屋 + 系統櫥俱) -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showPage('home')">
+                    <svg viewBox="0 0 200 200" class="w-12 h-12 md:w-14 md:h-14 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 宀 煙囪與頂部 -->
+                        <rect x="93" y="24" width="14" height="16" fill="#003876" />
+                        <!-- 宀 房屋屋頂 -->
+                        <path d="M100,34 L25,62 L32,70 L100,45 L168,70 L175,62 Z" fill="#003876" />
+                        <!-- 左側系統櫥櫃結構 (含水槽與抽屜) -->
+                        <g fill="#003876">
+                            <rect x="48" y="76" width="50" height="74" />
+                            <rect x="56" y="84" width="34" height="30" fill="#ffffff" />
+                            <path d="M62,94 H84 V106 H62 Z M68,91 H78 V94 H68 Z" fill="#003876" />
+                            <rect x="56" y="120" width="34" height="22" fill="#ffffff" />
+                            <rect x="66" y="129" width="14" height="4" rx="1" fill="#003876" />
+                        </g>
+                        <!-- 右側抽油煙機與烤箱門板 -->
+                        <g fill="none" stroke="#003876" stroke-linecap="square">
+                            <rect x="108" y="68" width="52" height="82" stroke-width="7" />
+                            <path d="M118,78 H150 V84 L142,94 H126 L118,84 Z M130,94 V102 H138 V94" stroke-width="4" />
+                            <rect x="118" y="110" width="32" height="32" stroke-width="4" />
+                            <circle cx="134" cy="126" r="6" stroke-width="3" />
+                        </g>
+                    </svg>
+                    <div>
+                        <span class="text-xl md:text-2xl font-black tracking-wider text-[#003876] block leading-tight">安盛</span>
+                        <span class="text-xs text-stone-600 font-bold tracking-widest block">系統櫥俱</span>
+                    </div>
+                </div>
+
+                <!-- 電腦版選單 -->
+                <div class="hidden lg:flex items-center space-x-6 font-medium text-stone-700">
+                    <button onclick="showPage('home')" class="hover:text-sunshine-600 transition py-2">首頁</button>
+                    <button onclick="showPage('about')" class="hover:text-sunshine-600 transition py-2">關於我們</button>
+                    <button onclick="showPage('services')" class="hover:text-sunshine-600 transition py-2">服務項目</button>
+                    <button onclick="showPage('portfolio')" class="hover:text-sunshine-600 transition py-2">作品展示</button>
+                    <button onclick="showPage('contact')" class="hover:text-sunshine-600 transition py-2">聯絡我們</button>
+                    <button onclick="showPage('warranty')" class="bg-sunshine-100 text-sunshine-900 px-4 py-2 rounded-lg hover:bg-sunshine-200 transition font-semibold">線上保固</button>
+                    <button onclick="showPage('repair')" class="bg-sunshine-500 text-white px-4 py-2 rounded-lg hover:bg-sunshine-600 transition shadow-md font-semibold">線上報修</button>
+                    <button onclick="openAdminModal()" class="bg-stone-800 text-white px-4 py-2 rounded-lg hover:bg-stone-900 transition font-semibold text-sm">
+                        <i class="fa-solid fa-user-lock mr-1"></i> 後台管理
+                    </button>
+                </div>
+
+                <!-- 行動版漢堡按鈕 -->
+                <div class="lg:hidden">
+                    <button onclick="toggleMobileMenu()" class="text-stone-700 p-2 text-2xl focus:outline-none">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 行動版選單抽屜 -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-stone-100 bg-white px-4 pt-3 pb-6 space-y-3 shadow-lg">
+            <button onclick="showPage('home')" class="block w-full text-left py-2 text-stone-700 font-medium">首頁</button>
+            <button onclick="showPage('about')" class="block w-full text-left py-2 text-stone-700 font-medium">關於我們</button>
+            <button onclick="showPage('services')" class="block w-full text-left py-2 text-stone-700 font-medium">服務項目</button>
+            <button onclick="showPage('portfolio')" class="block w-full text-left py-2 text-stone-700 font-medium">作品展示</button>
+            <button onclick="showPage('contact')" class="block w-full text-left py-2 text-stone-700 font-medium">聯絡我們</button>
+            <button onclick="showPage('warranty')" class="block w-full text-left py-2 text-sunshine-900 font-medium bg-sunshine-50 p-2 rounded-lg">線上保固</button>
+            <button onclick="showPage('repair')" class="block w-full text-left py-2 text-white font-medium bg-sunshine-500 p-2 rounded-lg">線上報修</button>
+            <button onclick="openAdminModal()" class="block w-full text-left py-2 text-stone-900 font-bold border-t pt-3">後台管理系統</button>
+        </div>
+    </nav>
+
+    <!-- 主體內容容器 -->
+    <main class="flex-grow">
+        <!-- 1. 首頁 Section -->
+        <section id="home" class="page-section active">
+            <div class="hero-bg py-24 md:py-32 px-4 text-center">
+                <div class="max-w-4xl mx-auto">
+                    <span class="inline-block bg-sunshine-200 text-sunshine-900 px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold mb-6">新竹竹北在地首選 ‧ 綠建材品質保證</span>
+                    <h1 class="text-4xl md:text-6xl font-black text-stone-900 mb-6 leading-tight">讓陽光溫暖 注入家的每個角落</h1>
+                    <p class="text-stone-600 text-base md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
+                        安盛系統櫥櫃與櫥俱專注於客製化系統家具、高級廚具與智慧收納規劃，為您打造溫馨、明亮且充滿美感的居家空間。
+                    </p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button onclick="showPage('portfolio')" class="bg-sunshine-500 text-white px-8 py-3.5 rounded-xl font-bold shadow-lg hover:bg-sunshine-600 transition">瀏覽作品案例</button>
+                        <button onclick="showPage('contact')" class="bg-white text-stone-800 border-2 border-sunshine-300 px-8 py-3.5 rounded-xl font-bold hover:bg-sunshine-50 transition">免費到府丈量</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 特色亮點卡片區 -->
+            <div class="max-w-7xl mx-auto px-4 py-16">
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100">
+                        <div class="w-14 h-14 bg-sunshine-100 text-sunshine-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-stone-900">環保低甲醛板材</h3>
+                        <p class="text-stone-500 text-sm">嚴選歐洲進口防潮綠建材，守護您與家人健康。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100">
+                        <div class="w-14 h-14 bg-sunshine-100 text-sunshine-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-ruler-combined"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-stone-900">量身打造空間規劃</h3>
+                        <p class="text-stone-500 text-sm">精準丈量與動線設計，發揮極致收納潛能。</p>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-100">
+                        <div class="w-14 h-14 bg-sunshine-100 text-sunshine-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-lg font-bold mb-2 text-stone-900">完善保固與售後服務</h3>
+                        <p class="text-stone-500 text-sm">提供線上保固登錄與快捷線上報修管道。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 關於我們 Section -->
+        <section id="about" class="page-section py-16 px-4">
+            <div class="max-w-4xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-stone-100">
+                <h2 class="text-3xl font-bold text-stone-900 mb-6 text-center">關於安盛系統櫥櫃與櫥俱</h2>
+                <div class="space-y-4 text-stone-600 leading-relaxed text-center max-w-2xl mx-auto">
+                    <p>安盛團隊深耕居家系統櫃與專業廚具領域多年，我們深知廚房與系統收納是家庭生活動線的心臟。我們以「陽光、明亮、實用」為設計核心理念，致力於將美學設計與工藝技術完美融合。</p>
+                    <p>無論是全新的系統櫥櫃安裝、既有廚具更換，或是全屋客製化收納工程，安盛皆提供從初步溝通、免費丈量、3D 設計畫圖到專業施工與售後保固的一站式服務。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 服務項目 Section -->
+        <section id="services" class="page-section py-16 px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-center mb-12 text-stone-900">核心服務項目</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                        <i class="fa-solid fa-kitchen-set text-3xl text-sunshine-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-stone-900">客製化廚具系統</h3>
+                        <p class="text-stone-500 text-sm">中島檯面、歐式流理台、緩衝抽屜五金與整合式家電收納櫃。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                        <i class="fa-solid fa-couch text-3xl text-sunshine-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-stone-900">全屋系統櫥櫃</h3>
+                        <p class="text-stone-500 text-sm">客廳電視櫃、玄關系統鞋櫃、臥室隱藏式衣櫃與書房多功能櫃。</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-100">
+                        <i class="fa-solid fa-pen-ruler text-3xl text-sunshine-500 mb-4"></i>
+                        <h3 class="text-xl font-bold mb-2 text-stone-900">免費丈量與 3D 模擬</h3>
+                        <p class="text-stone-500 text-sm">專業專員到府親自丈量，提供直觀 3D 模擬成果預覽與透明化定價。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 作品展示 Section -->
+        <section id="portfolio" class="page-section py-16 px-4">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl font-bold text-stone-900 text-center mb-2">完工實景作品</h2>
+                <p class="text-stone-500 text-center text-sm mb-8">最新實景完工案例由工作人員於後台上傳維護</p>
+
+                <!-- 動態作品網格 -->
+                <div id="portfolio-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                <!-- 無照片狀態提示 -->
+                <div id="empty-portfolio-msg" class="bg-white p-12 rounded-2xl border-2 border-dashed border-stone-200 text-center text-stone-400">
+                    <i class="fa-regular fa-image text-5xl mb-3 text-stone-300"></i>
+                    <p class="text-lg font-medium text-stone-600">目前尚無公開展示照片</p>
+                    <p class="text-sm text-stone-400">請登入工作人員後台新增上傳作品實景照。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. 聯絡我們 Section -->
+        <section id="contact" class="page-section py-16 px-4 max-w-4xl mx-auto">
+            <div class="bg-white p-8 md:p-12 rounded-3xl shadow-sm border border-stone-100">
+                <h2 class="text-3xl font-bold text-stone-900 text-center mb-8">免費諮詢 / 預約丈量</h2>
+                <form onsubmit="handleContactSubmit(event)" class="space-y-5">
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">您的尊稱 *</label>
+                            <input type="text" required placeholder="例如：陳先生 / 林小姐" class="w-full p-3.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-sunshine-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">聯絡電話 *</label>
+                            <input type="tel" required placeholder="09XX-XXX-XXX" class="w-full p-3.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-sunshine-400 outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">施作項目預想</label>
+                        <select class="w-full p-3.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-sunshine-400 outline-none bg-white">
+                            <option>全屋系統櫥櫃規劃</option>
+                            <option>廚房客製化廚具工程</option>
+                            <option>主臥/次臥衣櫃設計</option>
+                            <option>電視櫃與玄關收納</option>
+                            <option>其他裝修需求</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">需求細節說明</label>
+                        <textarea rows="4" placeholder="請填寫房屋地點、預估空間狀況或特殊需求..." class="w-full p-3.5 border border-stone-200 rounded-xl focus:ring-2 focus:ring-sunshine-400 outline-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-sunshine-500 text-white font-bold py-4 rounded-xl hover:bg-sunshine-600 transition shadow-lg text-lg">送出預約專員聯繫</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 6. 線上保固 Section -->
+        <section id="warranty" class="page-section py-16 px-4 max-w-2xl mx-auto">
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold text-center mb-6 text-stone-900">安盛線上保固登記</h2>
+                <form onsubmit="handleWarrantySubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">合約 / 保固編號 *</label>
+                        <input type="text" id="w-code" required placeholder="請輸入保固卡號（如：AS-2026-888）" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">業主姓名 *</label>
+                        <input type="text" id="w-name" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">業主聯絡電話 *</label>
+                        <input type="tel" id="w-phone" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">工程完工日期 *</label>
+                        <input type="date" id="w-date" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                    </div>
+                    <button type="submit" class="w-full bg-sunshine-500 text-white font-bold py-3.5 rounded-xl hover:bg-sunshine-600 transition">開通線上保固權益</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 7. 線上報修 Section -->
+        <section id="repair" class="page-section py-16 px-4 max-w-2xl mx-auto">
+            <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-stone-100">
+                <h2 class="text-2xl font-bold text-center mb-6 text-stone-900">安盛售後線上報修</h2>
+                <form onsubmit="handleRepairSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">客戶姓名與電話 *</label>
+                        <input type="text" id="r-name" required placeholder="請輸入姓名與電話" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">報修類別 *</label>
+                        <select id="r-type" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400 bg-white">
+                            <option>五金鉸鍊 / 緩衝器調整</option>
+                            <option>門板調整 / 檯面狀況</option>
+                            <option>抽屜滑軌問題</option>
+                            <option>水槽 / 水管滲漏水</option>
+                            <option>其他狀況</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">上傳現場照片（可複選）</label>
+                        <input type="file" accept="image/*" multiple onchange="handleRepairPhoto(event)" class="w-full p-2 border border-stone-200 rounded-xl text-sm">
+                        <div id="repair-photo-preview" class="flex gap-2 mt-2 flex-wrap"></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1">狀況詳細描述 *</label>
+                        <textarea id="r-desc" rows="4" required placeholder="請簡述故障狀況或損壞位置..." class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-sunshine-600 text-white font-bold py-3.5 rounded-xl hover:bg-sunshine-700 transition">提交報修資料</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 8. 工作人員後台 Section -->
+        <section id="admin-panel" class="page-section py-16 px-4 max-w-7xl mx-auto">
+            <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <div>
+                    <h2 class="text-3xl font-bold text-stone-900">工作人員管理後台</h2>
+                    <p class="text-stone-500 text-sm">管理報修單據、查詢顧客保固與上傳作品實景照片</p>
+                </div>
+                <button onclick="showPage('home')" class="bg-stone-200 hover:bg-stone-300 px-4 py-2 rounded-xl text-stone-800 font-semibold text-sm">退出後台</button>
+            </div>
+
+            <!-- 後台分頁控制按鈕 -->
+            <div class="flex border-b border-stone-200 mb-6 gap-4">
+                <button onclick="switchAdminTab('repairs')" id="tab-repairs" class="pb-3 font-bold border-b-2 border-sunshine-500 text-sunshine-600">報修申請單 (<span id="count-repairs">0</span>)</button>
+                <button onclick="switchAdminTab('warranties')" id="tab-warranties" class="pb-3 font-bold text-stone-500 border-b-2 border-transparent">保固登記資料 (<span id="count-warranties">0</span>)</button>
+                <button onclick="switchAdminTab('portfolio')" id="tab-portfolio" class="pb-3 font-bold text-stone-500 border-b-2 border-transparent">作品展示管理</button>
+            </div>
+
+            <!-- 後台 - 報修單列表 -->
+            <div id="admin-tab-repairs" class="admin-tab-content">
+                <div class="bg-white rounded-2xl border border-stone-200 overflow-x-auto shadow-sm">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-stone-100 border-b text-stone-600">
+                            <tr>
+                                <th class="p-4">提交時間</th>
+                                <th class="p-4">客戶資料</th>
+                                <th class="p-4">報修項目</th>
+                                <th class="p-4">現場照片</th>
+                                <th class="p-4">描述說明</th>
+                                <th class="p-4">維修狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-repair-list" class="divide-y divide-stone-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 後台 - 保固列表 -->
+            <div id="admin-tab-warranties" class="admin-tab-content hidden">
+                <div class="bg-white rounded-2xl border border-stone-200 overflow-x-auto shadow-sm">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-stone-100 border-b text-stone-600">
+                            <tr>
+                                <th class="p-4">保固合約編號</th>
+                                <th class="p-4">業主姓名</th>
+                                <th class="p-4">聯絡電話</th>
+                                <th class="p-4">完工日期</th>
+                                <th class="p-4">登記時間</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-warranty-list" class="divide-y divide-stone-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 後台 - 作品上傳管理 -->
+            <div id="admin-tab-portfolio" class="admin-tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm max-w-xl">
+                    <h3 class="text-lg font-bold mb-4">新增作品照片</h3>
+                    <form onsubmit="savePortfolioItem(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">選擇照片 *</label>
+                            <input type="file" id="modal-file-input" accept="image/*" required onchange="previewModalImage(event)" class="w-full p-2 border rounded-xl text-sm">
+                            <div id="modal-img-preview-box" class="mt-2 hidden">
+                                <img id="modal-img-preview" class="w-full h-48 object-cover rounded-xl border">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">作品名稱 *</label>
+                            <input type="text" id="modal-title" required placeholder="例如：新竹竹北極簡歐式廚具" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-1">作品說明</label>
+                            <input type="text" id="modal-desc" placeholder="例如：採用白木紋低甲醛板材與進口緩衝五金" class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                        </div>
+                        <button type="submit" class="bg-sunshine-500 text-white font-bold px-6 py-2.5 rounded-xl hover:bg-sunshine-600 transition w-full">確認上傳作品</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 後台登入彈窗 (完全移除密碼文字提示) -->
+    <div id="admin-login-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-center text-stone-900">工作人員後台登入</h3>
+            <form onsubmit="verifyAdminPassword(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">請輸入管理密碼</label>
+                    <input type="password" id="admin-pwd" required class="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-sunshine-400">
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeAdminModal()" class="px-5 py-2 rounded-xl border font-semibold">取消</button>
+                    <button type="submit" class="bg-stone-900 text-white font-bold px-6 py-2 rounded-xl hover:bg-stone-800 transition">登入後台</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 頁尾宣告 -->
+    <footer class="bg-warmwood-900 text-stone-300 py-12 px-4 mt-auto">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 pb-8 border-b border-stone-800 text-sm">
+            <div>
+                <div class="flex items-center space-x-3 mb-4">
+                    <svg viewBox="0 0 200 200" class="w-10 h-10 flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="93" y="24" width="14" height="16" fill="#ffffff" />
+                        <path d="M100,34 L25,62 L32,70 L100,45 L168,70 L175,62 Z" fill="#ffffff" />
+                        <g fill="#ffffff">
+                            <rect x="48" y="76" width="50" height="74" />
+                            <rect x="56" y="84" width="34" height="30" fill="#2d221c" />
+                            <path d="M62,94 H84 V106 H62 Z M68,91 H78 V94 H68 Z" fill="#ffffff" />
+                            <rect x="56" y="120" width="34" height="22" fill="#2d221c" />
+                            <rect x="66" y="129" width="14" height="4" rx="1" fill="#ffffff" />
+                        </g>
+                        <g fill="none" stroke="#ffffff" stroke-linecap="square">
+                            <rect x="108" y="68" width="52" height="82" stroke-width="7" />
+                            <path d="M118,78 H150 V84 L142,94 H126 L118,84 Z M130,94 V102 H138 V94" stroke-width="4" />
+                            <rect x="118" y="110" width="32" height="32" stroke-width="4" />
+                            <circle cx="134" cy="126" r="6" stroke-width="3" />
+                        </g>
+                    </svg>
+                    <h4 class="text-white text-lg font-bold">安盛系統櫥俱</h4>
+                </div>
+                <p class="text-stone-400 leading-relaxed">提供客製化廚具、全屋系統櫃設計與修繕保固服務，為您打造理想明亮空間。</p>
+            </div>
+            <div class="space-y-2">
+                <h4 class="text-white text-lg font-bold mb-3">聯絡資訊</h4>
+                <p><i class="fa-solid fa-phone text-sunshine-400 w-5"></i> <a href="tel:0978128575" class="hover:underline">0978-128-575</a> / <a href="tel:0912617893" class="hover:underline">0912-617-893</a></p>
+                <p><i class="fa-solid fa-envelope text-sunshine-400 w-5"></i> <a href="mailto:a56578927@gmail.com" class="hover:underline">a56578927@gmail.com</a></p>
+                <p><i class="fa-solid fa-location-dot text-sunshine-400 w-5"></i> 新竹縣竹北市沿河街169-3號</p>
+            </div>
+            <div>
+                <h4 class="text-white text-lg font-bold mb-3">快速鏈結</h4>
+                <div class="flex flex-col gap-2">
+                    <a href="https://maps.google.com/?q=新竹縣竹北市沿河街169-3號" target="_blank" class="text-sunshine-400 hover:underline"><i class="fa-solid fa-map-location-dot mr-1"></i> 打開 Google 地圖導航</a>
+                    <button onclick="showPage('warranty')" class="text-left text-stone-300 hover:text-white">保固開通登記</button>
+                    <button onclick="showPage('repair')" class="text-left text-stone-300 hover:text-white">售後線上報修</button>
+                    <button onclick="openAdminModal()" class="text-left text-stone-500 hover:text-stone-300 text-xs pt-2">工作人員管理系統</button>
+                </div>
+            </div>
+        </div>
+        <p class="text-center text-xs text-stone-500 pt-8">© 2026 安盛系統櫥櫃與櫥俱 版權所有</p>
+    </footer>
+
+    <!-- JavaScript 邏輯控制 -->
+    <script>
+        let currentModalImageBase64 = '';
+        let repairPhotosTemp = [];
+        let repairsData = [];
+        let warrantiesData = [];
+
+        // 切換主頁面 Section
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // 開關行動版漢堡選單
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // 浮動 Notification 訊息提示
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // 表單送出 - 預約丈量
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showToast('預約需求已成功送出！安盛專員將會盡快與您聯繫！');
+            e.target.reset();
+        }
+
+        // 表單送出 - 線上保固
+        function handleWarrantySubmit(e) {
+            e.preventDefault();
+            const wData = {
+                code: document.getElementById('w-code').value,
+                name: document.getElementById('w-name').value,
+                phone: document.getElementById('w-phone').value,
+                date: document.getElementById('w-date').value,
+                created: new Date().toLocaleString()
+            };
+            warrantiesData.push(wData);
+            updateAdminDashboard();
+            showToast('保固資料已成功開通登記！');
+            e.target.reset();
+        }
+
+        // 表單送出 - 線上報修
+        function handleRepairSubmit(e) {
+            e.preventDefault();
+            const rData = {
+                name: document.getElementById('r-name').value,
+                type: document.getElementById('r-type').value,
+                desc: document.getElementById('r-desc').value,
+                photos: [...repairPhotosTemp],
+                status: '尚未維修',
+                created: new Date().toLocaleString()
+            };
+            repairsData.push(rData);
+            updateAdminDashboard();
+            showToast('報修單已提交，技術專員將盡速聯絡！');
+            e.target.reset();
+            document.getElementById('repair-photo-preview').innerHTML = '';
+            repairPhotosTemp = [];
+        }
+
+        // 報修現場照片選擇與預覽
+        function handleRepairPhoto(e) {
+            const container = document.getElementById('repair-photo-preview');
+            container.innerHTML = '';
+            repairPhotosTemp = [];
+            Array.from(e.target.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    repairPhotosTemp.push(evt.target.result);
+                    const img = document.createElement('img');
+                    img.src = evt.target.result;
+                    img.className = 'w-16 h-16 object-cover rounded-lg border';
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // 後台登入彈窗控制
+        function openAdminModal() {
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-login-modal').classList.add('hidden');
+        }
+
+        // 後台密碼驗證 (900607)
+        function verifyAdminPassword(e) {
+            e.preventDefault();
+            const pwd = document.getElementById('admin-pwd').value;
+            if (pwd === '900607') {
+                closeAdminModal();
+                document.getElementById('admin-pwd').value = '';
+                showPage('admin-panel');
+                updateAdminDashboard();
+                showToast('已順利登入工作人員後台');
+            } else {
+                showToast('密碼錯誤，請重新輸入');
+            }
+        }
+
+        // 後台分頁切換
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`admin-tab-${tab}`).classList.remove('hidden');
+
+            document.getElementById('tab-repairs').className = 'pb-3 font-bold border-b-2 border-transparent text-stone-500';
+            document.getElementById('tab-warranties').className = 'pb-3 font-bold border-b-2 border-transparent text-stone-500';
+            document.getElementById('tab-portfolio').className = 'pb-3 font-bold border-b-2 border-transparent text-stone-500';
+
+            const activeTabBtn = document.getElementById(`tab-${tab}`);
+            if (activeTabBtn) {
+                activeTabBtn.className = 'pb-3 font-bold border-b-2 border-sunshine-500 text-sunshine-600';
+            }
+        }
+
+        // 更新後台資料與畫面渲染
+        function updateAdminDashboard() {
+            document.getElementById('count-repairs').innerText = repairsData.length;
+            document.getElementById('count-warranties').innerText = warrantiesData.length;
+
+            const rList = document.getElementById('admin-repair-list');
+            if (repairsData.length === 0) {
+                rList.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-stone-400">尚無顧客提交報修單據</td></tr>`;
+            } else {
+                rList.innerHTML = repairsData.map((r, idx) => `
+                    <tr>
+                        <td class="p-4 text-stone-400 text-xs">${r.created}</td>
+                        <td class="p-4 font-bold text-stone-900">${r.name}</td>
+                        <td class="p-4 text-sunshine-700 font-semibold">${r.type}</td>
+                        <td class="p-4">
+                            <div class="flex gap-1">
+                                ${r.photos.map(p => `<img src="${p}" class="w-10 h-10 object-cover rounded border">`).join('') || '<span class="text-stone-400 text-xs">無相片</span>'}
+                            </div>
+                        </td>
+                        <td class="p-4 max-w-xs text-stone-600">${r.desc}</td>
+                        <td class="p-4">
+                            <select onchange="changeRepairStatus(${idx}, this.value)" class="p-2 rounded-xl text-xs font-bold border outline-none cursor-pointer transition ${r.status === '已維修' ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-amber-100 text-amber-800 border-amber-300'}">
+                                <option value="尚未維修" ${r.status === '尚未維修' ? 'selected' : ''}>尚未維修</option>
+                                <option value="已維修" ${r.status === '已維修' ? 'selected' : ''}>已維修</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            const wList = document.getElementById('admin-warranty-list');
+            if (warrantiesData.length === 0) {
+                wList.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-stone-400">尚無線上保固登記紀錄</td></tr>`;
+            } else {
+                wList.innerHTML = warrantiesData.map(w => `
+                    <tr>
+                        <td class="p-4 font-bold text-sunshine-700">${w.code}</td>
+                        <td class="p-4 font-medium">${w.name}</td>
+                        <td class="p-4">${w.phone}</td>
+                        <td class="p-4 text-stone-600">${w.date}</td>
+                        <td class="p-4 text-stone-400 text-xs">${w.created}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        // 切換報修維修狀態
+        function changeRepairStatus(index, newStatus) {
+            if (repairsData[index]) {
+                repairsData[index].status = newStatus;
+                updateAdminDashboard();
+                showToast(`維修狀態已更新為「${newStatus}」`);
+            }
+        }
+
+        // 彈窗相片選擇預覽
+        function previewModalImage(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    currentModalImageBase64 = evt.target.result;
+                    document.getElementById('modal-img-preview').src = currentModalImageBase64;
+                    document.getElementById('modal-img-preview-box').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // 後台作品照片上傳儲存並發布至前台
+        function savePortfolioItem(e) {
+            e.preventDefault();
+            const title = document.getElementById('modal-title').value;
+            const desc = document.getElementById('modal-desc').value;
+
+            if (!currentModalImageBase64) {
+                showToast('請選擇一張照片上傳');
+                return;
+            }
+
+            const grid = document.getElementById('portfolio-grid');
+            const emptyMsg = document.getElementById('empty-portfolio-msg');
+            emptyMsg.classList.add('hidden');
+
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-100 relative group';
+            card.innerHTML = `
+                <img src="${currentModalImageBase64}" class="w-full h-64 object-cover">
+                <div class="p-5">
+                    <h3 class="font-bold text-stone-900 text-lg mb-1">${title}</h3>
+                    <p class="text-stone-500 text-sm">${desc || '安盛高品質完工實景案例'}</p>
+                </div>
+            `;
+            grid.appendChild(card);
+
+            document.getElementById('modal-title').value = '';
+            document.getElementById('modal-desc').value = '';
+            document.getElementById('modal-file-input').value = '';
+            document.getElementById('modal-img-preview-box').classList.add('hidden');
+            currentModalImageBase64 = '';
+
+            showToast('作品照片已成功發佈至前台作品展示頁面！');
+        }
+    </script>
+</body>
+</html>
